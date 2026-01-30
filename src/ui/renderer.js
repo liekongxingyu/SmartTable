@@ -19,12 +19,62 @@ export const Renderer = {
 
   render(data, callbacks) {
     const html = `
+        <style>
+            @media (max-width: 768px) {
+                #${this.panelId} {
+                    width: 100vw !important;
+                    height: 100vh !important;
+                    max-width: 100vw !important;
+                    max-height: 100vh !important;
+                    border-radius: 0 !important;
+                    top: 0 !important;
+                    left: 0 !important;
+                    transform: none !important;
+                }
+                #${this.panelId} .st-sidebar {
+                    width: 60px !important;
+                    padding: 20px 0 !important;
+                }
+                #${this.panelId} .st-tab-btn {
+                    font-size: 1.3em !important;
+                    margin-bottom: 25px !important;
+                }
+                #${this.panelId}-body {
+                    padding: 20px 15px !important;
+                }
+                #${this.panelId}-close {
+                    top: 15px !important;
+                    right: 20px !important;
+                    font-size: 1.5em !important;
+                }
+            }
+            @media (min-width: 769px) and (max-width: 1200px) {
+                #${this.panelId} {
+                    width: 90vw !important;
+                    height: 85vh !important;
+                    max-width: 800px !important;
+                    max-height: 650px !important;
+                }
+            }
+        </style>
         <div id="${this.panelId}" style="
-            position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%);
-            width: 900px; height: 700px; background: rgba(10, 10, 15, 0.99);
-            backdrop-filter: blur(50px); border: 1px solid rgba(255, 255, 255, 0.1);
-            border-radius: 28px; box-shadow: 0 40px 100px rgba(0,0,0,0.95);
-            color: #fff; z-index: 10002; display: flex; overflow: hidden;
+            position: fixed; 
+            top: 50%; 
+            left: 50%; 
+            transform: translate(-50%, -50%);
+            width: 90vw; 
+            height: 85vh; 
+            max-width: 900px; 
+            max-height: 700px;
+            background: rgba(10, 10, 15, 0.99);
+            backdrop-filter: blur(50px); 
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 28px; 
+            box-shadow: 0 40px 100px rgba(0,0,0,0.95);
+            color: #fff; 
+            z-index: 10002; 
+            display: flex; 
+            overflow: hidden;
             font-family: 'Inter', system-ui;
         ">
             <!-- Close -->
@@ -33,23 +83,23 @@ export const Renderer = {
             </div>
 
             <!-- Sidebar -->
-            <div style="width: 85px; background: rgba(0,0,0,0.4); display: flex; flex-direction: column; align-items: center; padding: 40px 0; border-right: 1px solid rgba(255,255,255,0.03); flex-shrink: 0;">
-                <div class="st-tab-btn" data-tab="view" style="margin-bottom: 40px; font-size: 1.6em; cursor: pointer; opacity: ${this.currentTab === "view" ? "1" : "0.3"};" title="看板">
+            <div class="st-sidebar" style="width: 85px; background: rgba(0,0,0,0.4); display: flex; flex-direction: column; align-items: center; padding: 40px 0; border-right: 1px solid rgba(255,255,255,0.03); flex-shrink: 0;">
+                <div class="st-tab-btn" data-tab="view" style="margin-bottom: 40px; font-size: 1.6em; cursor: pointer; opacity: ${this.currentTab === "view" ? "1" : "0.3"}; transition: all 0.3s;" title="看板">
                     <i class="fa-solid fa-gauge-high"></i>
                 </div>
-                <div class="st-tab-btn" data-tab="template" style="margin-bottom: 40px; font-size: 1.6em; cursor: pointer; opacity: ${this.currentTab === "template" ? "1" : "0.3"};" title="模板">
+                <div class="st-tab-btn" data-tab="template" style="margin-bottom: 40px; font-size: 1.6em; cursor: pointer; opacity: ${this.currentTab === "template" ? "1" : "0.3"}; transition: all 0.3s;" title="模板">
                     <i class="fa-solid fa-table-columns"></i>
                 </div>
-                <div class="st-tab-btn" data-tab="editor" style="margin-bottom: 40px; font-size: 1.6em; cursor: pointer; opacity: ${this.currentTab === "editor" ? "1" : "0.3"};" title="策略">
+                <div class="st-tab-btn" data-tab="editor" style="margin-bottom: 40px; font-size: 1.6em; cursor: pointer; opacity: ${this.currentTab === "editor" ? "1" : "0.3"}; transition: all 0.3s;" title="策略">
                     <i class="fa-solid fa-bolt-lightning"></i>
                 </div>
-                <div class="st-tab-btn" data-tab="settings" style="margin-bottom: 40px; font-size: 1.6em; cursor: pointer; opacity: ${this.currentTab === "settings" ? "1" : "0.3"};" title="设置">
+                <div class="st-tab-btn" data-tab="settings" style="margin-bottom: 40px; font-size: 1.6em; cursor: pointer; opacity: ${this.currentTab === "settings" ? "1" : "0.3"}; transition: all 0.3s;" title="设置">
                     <i class="fa-solid fa-cog"></i>
                 </div>
             </div>
 
             <!-- Body -->
-            <div id="${this.panelId}-body" style="flex: 1; padding: 60px; overflow-y: auto;">
+            <div id="${this.panelId}-body" style="flex: 1; padding: 60px; overflow-y: auto; overflow-x: hidden;">
                 ${this.renderCurrentTab(data)}
             </div>
         </div>`;
