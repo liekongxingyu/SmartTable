@@ -1,0 +1,7 @@
+{
+  "display_name": "智能表格",
+  "version": "1.0.0",
+  "author": "Antigravity",
+  "js": "index.js",
+  "loading_order": 10
+}
