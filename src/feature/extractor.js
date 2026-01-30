@@ -108,6 +108,7 @@ Output ONLY valid JSON. No explanations.`;
     // 情况 A: 用户配置了独立 API
     if (customApi && customApi.endpoint && customApi.key) {
       try {
+        console.log("[SmartTable] 🔵 尝试使用独立 API...");
         const payload = {
           messages: [{ role: "user", content: promptTexts }],
           model: customApi.model || "gpt-3.5-turbo",
@@ -118,29 +119,43 @@ Output ONLY valid JSON. No explanations.`;
           json_schema: jsonSchema,
         };
 
+        console.log("[SmartTable] 📤 发送独立 API 请求...");
         const response = await STAPI.customGenerate(payload);
-        console.log("[SmartTable] 独立 API 请求成功");
+        console.log("[SmartTable] ✅ 独立 API 请求成功，返回数据");
 
         const aiResult =
           typeof response.content === "object"
             ? response.content
             : JSON.parse(response.content);
+
+        console.log("[SmartTable] 🔵 独立 API 路径完成，不再尝试主 API");
         return this.mergeResults(aiResult, currentTables, categories);
       } catch (e) {
-        console.error("[SmartTable] 独立 API 请求失败，尝试回退到主 API:", e);
+        console.error(
+          "[SmartTable] ❌ 独立 API 请求失败，准备回退:",
+          e.message,
+        );
         toastr.warning("独立 API 请求失败，正在尝试使用酒馆主 API...");
+        // 继续执行下面的主 API 逻辑
       }
+    } else {
+      console.log("[SmartTable] 🟡 未配置独立 API，将使用酒馆主 API");
     }
 
     // 情况 B: 回退到 generateRaw
     try {
-      console.log("[SmartTable] 正在使用酒馆主 API 提取...");
+      console.log("[SmartTable] 🟢 正在使用酒馆主 API 提取...");
+      console.log("[SmartTable] 📤 发送主 API 请求...");
       const result = await STAPI.generate(promptTexts, jsonSchema);
-      if (!result) return null;
+      if (!result) {
+        console.log("[SmartTable] ⚠️ 主 API 返回空结果");
+        return null;
+      }
+      console.log("[SmartTable] ✅ 主 API 请求成功，返回数据");
       const aiResult = typeof result === "string" ? JSON.parse(result) : result;
       return this.mergeResults(aiResult, currentTables, categories);
     } catch (e) {
-      console.error("[SmartTable] 所有 API 尝试均失败:", e);
+      console.error("[SmartTable] ❌ 所有 API 尝试均失败:", e);
       return null;
     }
   },
