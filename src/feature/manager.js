@@ -27,6 +27,11 @@ export class SmartTableManager {
       baseFloor: 0,
       snapshots: [], // 快照数组：[{ messageIndex, tables, timestamp }, ...]
     };
+
+    // 防抖机制：防止移动端双重触发
+    this.updateInProgress = false; // 更新锁
+    this.lastUpdateTimestamp = 0; // 上次更新时间戳
+    this.updateDebounceMs = 5000; // 防抖时间：5秒
   }
 
   init() {
@@ -158,6 +163,22 @@ ${injectable.content}
   }
 
   async onChatUpdated() {
+    // 🛡️ 防抖检查：避免移动端双重触发
+    const now = Date.now();
+    const timeSinceLastUpdate = now - this.lastUpdateTimestamp;
+
+    if (this.updateInProgress) {
+      console.log(`⏸️ [SmartTable] 更新正在进行中，跳过本次触发`);
+      return;
+    }
+
+    if (timeSinceLastUpdate < this.updateDebounceMs) {
+      console.log(
+        `⏸️ [SmartTable] 距离上次更新仅 ${timeSinceLastUpdate}ms，防抖跳过 (阈值: ${this.updateDebounceMs}ms)`,
+      );
+      return;
+    }
+
     const config = Storage.getGlobalConfig(this.defaultConfig);
     const chatData = Storage.getChatData(this.defaultChatData);
     const currentIdx = Math.max(0, (STAPI.getContext()?.chat?.length || 1) - 1);
@@ -191,7 +212,17 @@ ${injectable.content}
         `[SmartTable] 准备更新 ${categories.length} 个表格:`,
         categories.map((c) => c.title),
       );
-      await this.refreshSelectedCategories(categories, config, chatData);
+
+      // 🔒 设置更新锁和时间戳
+      this.updateInProgress = true;
+      this.lastUpdateTimestamp = now;
+
+      try {
+        await this.refreshSelectedCategories(categories, config, chatData);
+      } finally {
+        // 🔓 释放更新锁
+        this.updateInProgress = false;
+      }
     } else {
       console.log("[SmartTable] 没有表格需要更新");
     }
