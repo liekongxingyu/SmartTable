@@ -41,11 +41,18 @@ export const TableInjector = {
       const tableData = tables[cat.id];
       if (!tableData || tableData.length === 0) return;
 
-      const content = this.formatTable(cat, tableData);
+      // 根据 injectMaxRows 限制注入数量（0或未设置表示不限制）
+      const maxRows = cat.injectMaxRows || 0;
+      const dataToInject =
+        maxRows > 0 ? tableData.slice(0, maxRows) : tableData;
+
+      const content = this.formatTable(cat, dataToInject);
       if (content) {
         injectables.push({
           depth: cat.injectDepth || 0,
           content: content,
+          actualRows: dataToInject.length,
+          totalRows: tableData.length,
         });
       }
     });

@@ -116,6 +116,17 @@ export const TemplatePage = {
                                 style="width: 100px; background: #000; border: 1px solid #333; color: #fff; padding: 6px; border-radius: 6px; text-align: center;">
                             <span style="color: #666; font-size: 0.75em;">(0=最前 1000=中间 2000=靠后)</span>
                         </div>
+
+                        <!-- 注入数量限制 -->
+                        <div class="st-inject-maxrows-section" style="margin-left: 30px; display: ${table.injectOnInput ? "flex" : "none"}; align-items: center; gap: 10px;">
+                            <span style="color: #888; font-size: 0.8em;">
+                                <i class="fa-solid fa-filter" style="opacity: 0.5;"></i>
+                                最多注入:
+                            </span>
+                            <input type="number" class="st-inject-maxrows" value="${table.injectMaxRows || 0}" min="0"
+                                style="width: 100px; background: #000; border: 1px solid #333; color: #fff; padding: 6px; border-radius: 6px; text-align: center;">
+                            <span style="color: #666; font-size: 0.75em;">(0=全部注入，仅限制注入量)</span>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -247,7 +258,7 @@ export const TemplatePage = {
         onUpdateSchema(schema);
         $(this)
           .closest(".st-table-card")
-          .find(".st-inject-depth-section")
+          .find(".st-inject-depth-section, .st-inject-maxrows-section")
           .toggle(schema[idx].injectOnInput);
       });
 
@@ -258,6 +269,16 @@ export const TemplatePage = {
         const idx = $(this).closest(".st-table-card").data("idx");
         schema[idx].injectDepth = parseInt($(this).val()) || 0;
         onUpdateSchema(schema);
+      });
+
+    // 注入数量限制
+    $(".st-inject-maxrows")
+      .off("change")
+      .on("change", function () {
+        const idx = $(this).closest(".st-table-card").data("idx");
+        schema[idx].injectMaxRows = parseInt($(this).val()) || 0;
+        onUpdateSchema(schema);
+        toastr.success("注入数量限制已更新");
       });
   },
 };
